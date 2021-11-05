@@ -45,14 +45,56 @@ def root():
 
 @app.route("/add")
 def admin():
-    cur = conn.cursor()
-    cur.execute("SELECT categoryId, name FROM categories")
-    categories = cur.fetchall()
-     
-    return render_template('add.html', categories=categories)
+    # cur = conn.cursor()
+    # cur.execute("SELECT categoryId, name FROM categories")
+    # categories = cur.fetchall()
+    return render_template("checktoadd.html")
+    # return render_template('add.html', categories=categories)
+
+@app.route("/checktoadd", methods=["GET", "POST"])
+def checktoadd():
+    ide=""
+    password=""
+    if request.method == "POST":
+        ide = request.form['ide']
+        password = request.form['password']
+    if (ide == "user@add.com" and password == "password"): #add/update username/password as per your choice
+        cur = conn.cursor()
+        cur.execute("SELECT categoryId, name FROM categories")
+        categories = cur.fetchall()
+        return render_template("add.html", categories=categories)
+    else:
+        error = "Invalid username/password"
+        return render_template("checktoadd.html", error=error)
+
+
+# added to check authority of user to remove posts
+@app.route("/checktoremove", methods=["GET", "POST"])
+def checktoremove():
+    # ide=""
+    # password=""
+    if request.method == "POST":
+        ide = request.form['ide']
+        password = request.form['password']
+        if (ide == "user@gremove.com" and password == "password"): #add/update username/password as per your choice
+            cur = conn.cursor()
+            cur.execute('SELECT productId, name, price, description, image, stock FROM products')
+            data = cur.fetchall()
+            return render_template("remove.html", data=data)
+    else:
+        error = "Invalid username/password"
+        return render_template("checktoremove.html", error=error)z
+
+    
+@app.route("/checkout")
+def checkOut():
+    return "Create the checkout credentials"
+
+
 
 @app.route("/addItem", methods=["GET", "POST"])
 def addItem():
+    global msg
     if request.method == "POST":
         name = request.form['name']
         price = float(request.form['price'])
@@ -86,11 +128,11 @@ def addItem():
 
 @app.route("/remove")
 def remove():
-    cur = conn.cursor()
-    cur.execute('SELECT productId, name, price, description, image, stock FROM products')
-    data = cur.fetchall()
-     
-    return render_template('remove.html', data=data)
+    # cur = conn.cursor()
+    # cur.execute('SELECT productId, name, price, description, image, stock FROM products')
+    # data = cur.fetchall()
+    return render_template('checktoremove.html')
+    # return render_template('remove.html', data=data)
 
 @app.route("/removeItem")
 def removeItem():
